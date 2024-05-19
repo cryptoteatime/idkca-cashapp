@@ -1,0 +1,14 @@
+node_modules/
+.DS_Store
+vendor/
+node_modules/
+.DS_Store
+vendor/
+wordpress/
+Thumbs.db
+*.log
+*.sql
+*.sqlite
+build/
+cache/
+dist/
