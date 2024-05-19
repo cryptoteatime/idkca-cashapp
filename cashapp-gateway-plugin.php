@@ -6,7 +6,7 @@
  * Version: 1.1.21
  * Author: JD Farrell
  * Author URI: https://idkcode.com
- * Text Domain: dcomp
+ * Text Domain: idkca-cashapp
  * Domain Path: /languages
  * License: GPLv2 or later
  * License URI: https://www.gnu.org/licenses/gpl-2.0.html
@@ -26,7 +26,7 @@ $plugin_config = array(
 );
 define('DCOMP_IDKCA_LICENSE_KEY_OPTION', $plugin_config['license_key_option']); // Option name for storing the license key.
 define('DCOMP_IDKCA_PLUGIN_VERSION', $plugin_config['plugin_version']); // Plugin version.
-define('DCOMP_IDKCA_DIR_PATH', $plugin_config['plugin_dir_path']; // Directory path of the plugin.
+define('DCOMP_IDKCA_DIR_PATH', $plugin_config['plugin_dir_path']); // Directory path of the plugin.
 define('DCOMP_IDKCA_PLUGIN_URL', $plugin_config['plugin_url']); // URL of the plugin directory.
 
 // Include utility functions.
