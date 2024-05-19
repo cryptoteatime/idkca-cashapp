@@ -12,6 +12,8 @@ Copyright: 2023 Digital Compass. All rights reserved.
 
 The WooCommerce CashApp Payment Gateway plugin allows your customers to make payments using CashApp directly on your WooCommerce store. This plugin seamlessly integrates with your store, providing a convenient and secure payment method for your customers.
 
+**Note**: The free version does not support automatic payment confirmations. Automatic payment confirmation is available with the premium add-on.
+
 == Features ==
 
 - **Easy Integration**: Quickly add CashApp as a payment option on your WooCommerce store.
@@ -19,7 +21,6 @@ The WooCommerce CashApp Payment Gateway plugin allows your customers to make pay
 - **Customizable**: Easily customize the payment gateway title and description displayed to customers during checkout.
 - **CashApp Tag Support**: Collect payments with your unique CashApp tag.
 - **QR Code Support**: Optionally, provide a QR code for customers to scan and pay.
-- **Email Verification**: Verify the authenticity of payment confirmation emails.
 - **Debugging**: Enable logging for troubleshooting and debugging.
 
 == Installation ==
@@ -35,10 +36,8 @@ The WooCommerce CashApp Payment Gateway plugin allows your customers to make pay
 3. Set your desired title and description for the payment method.
 4. Enter your CashApp tag.
 5. Optionally, enable QR code support if you want to provide a QR code for payments.
-6. Configure your email settings, including the email server, port, username, and password.
-7. Set the Cron Interval (in seconds) for checking emails. The default is 300 seconds (5 minutes).
-8. Optionally, enable 'Retain Data on Uninstall' to keep plugin data upon uninstallation for testing purposes.
-9. Enable 'Debug Log' to log CashApp events for troubleshooting.
+6. Optionally, enable 'Retain Data on Uninstall' to keep plugin data upon uninstallation for testing purposes.
+7. Enable 'Debug Log' to log CashApp events for troubleshooting.
 
 == Usage ==
 
@@ -53,21 +52,21 @@ The WooCommerce CashApp Payment Gateway plugin allows your customers to make pay
 
 To obtain a CashApp tag, you need to create a CashApp account. Once you have an account, you'll be assigned a unique CashApp tag that you can use to receive payments.
 
-### How does the plugin verify payment confirmation emails?
-
-The plugin verifies the authenticity of payment confirmation emails by checking the email headers, domain validity, and DKIM signatures. Emails from genuine sources are processed further.
-
 ### Can I customize the appearance of the CashApp payment method on my store?
 
 Yes, you can customize the payment gateway title and description displayed to customers during checkout. Additionally, you can choose to enable QR code support for a more user-friendly payment experience.
 
+### Does the free version support automatic payment confirmations?
+
+No, the free version does not support automatic payment confirmations. Automatic payment confirmation is available with the premium add-on.
+
 == Changelog ==
 
 = 1.1 =
-* Included Updater drop in folder for automatic updates handling.
+* Included Updater drop-in folder for automatic updates handling.
 
 = 1.0 =
-* Initial release
+* Initial release.
 
 == Upgrade Notice ==
 
