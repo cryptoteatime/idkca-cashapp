@@ -3,7 +3,7 @@
  * Plugin Name: CashApp Gateway for WooCommerce
  * Plugin URI: https://idkcode.com
  * Description: A custom WooCommerce Payment Gateway for CashApp.
- * Version: 1.0.7
+ * Version: 1.0.72
  * Author: JD Farrell
  * Author URI: https://idkcode.com
  * Text Domain: idkca-cashapp
