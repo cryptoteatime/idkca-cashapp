@@ -85,7 +85,7 @@ class DComp_CashApp_Main {
      * @return array Modified plugin action links with the settings link added.
      */
     public function add_settings_link($links) {
-        $settings_link = '<a href="' . admin_url('admin.php?page=wc-settings&tab=checkout&section=dcomp_cashapp') . '">' . __('Settings') . '</a>';
+        $settings_link = '<a href="' . admin_url('admin.php?page=wc-settings&tab=checkout&section=dcomp_cashapp') . '">' . __('Settings', 'idkca-cashapp') . '</a>';
         array_unshift($links, $settings_link);
         return $links;
     }
@@ -95,7 +95,8 @@ class DComp_CashApp_Main {
      */
     public function woocommerce_missing_notice() {
         if (!class_exists('WC_Payment_Gateway')) {
-            echo '<div class="error"><p><strong>' . sprintf(esc_html__('CashApp Gateway requires WooCommerce to be installed and active. You can download %s here.'), '<a href="https://woocommerce.com/" target="_blank">WooCommerce</a>') . '</strong></p></div>';
+            /* translators: %s: WooCommerce download link */
+            echo '<div class="error"><p><strong>' . sprintf(esc_html__('CashApp Gateway requires WooCommerce to be installed and active. You can download %s here.', 'idkca-cashapp'), '<a href="https://woocommerce.com/" target="_blank">WooCommerce</a>') . '</strong></p></div>';
         }
     }
 
@@ -104,12 +105,13 @@ class DComp_CashApp_Main {
      */
     public function register_custom_order_status() {
         register_post_status('wc-confirm-payment', array(
-            'label'                     => _x('Confirming', 'Order status', 'woocommerce'),
+            'label'                     => _x('Confirming', 'Order status', 'idkca-cashapp'),
             'public'                    => true,
             'exclude_from_search'       => false,
             'show_in_admin_all_list'    => true,
             'show_in_admin_status_list' => true,
-            'label_count'               => _n_noop('Confirm Payment <span class="count">(%s)</span>', 'Confirm Payment <span class="count">(%s)</span>', 'woocommerce'),
+            /* translators: %s: number of orders */
+            'label_count'               => _n_noop('Confirm Payment <span class="count">(%s)</span>', 'Confirm Payment <span class="count">(%s)</span>', 'idkca-cashapp'),
         ));
     }
 
@@ -125,7 +127,7 @@ class DComp_CashApp_Main {
         foreach ($order_statuses as $key => $status) {
             $new_order_statuses[$key] = $status;
             if ('wc-processing' === $key) {
-                $new_order_statuses['wc-confirm-payment'] = _x('Confirming', 'Order status', 'woocommerce');
+                $new_order_statuses['wc-confirm-payment'] = _x('Confirming', 'Order status', 'idkca-cashapp');
             }
         }
 

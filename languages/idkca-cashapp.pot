@@ -1,0 +1,205 @@
+# CashApp Gateway for WooCommerce
+# Copyright (C) 2024 Digital Compass
+# This file is distributed under the same license as the CashApp Gateway plugin.
+# JD <jd.farrell@idkcode.com>, 2024.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: idkca-cashapp 1.0.72\n"
+"Report-Msgid-Bugs-To: bugs@idkcode.com\n"
+"POT-Creation-Date: 2024-05-19 15:51-0400\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"Language: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+
+#: includes/class-cashapp-main.php:88
+msgid "Settings"
+msgstr ""
+
+#: includes/class-cashapp-main.php:99
+#, php-format
+msgid ""
+"CashApp Gateway requires WooCommerce to be installed and active. You can "
+"download %s here."
+msgstr ""
+
+#: includes/class-cashapp-main.php:108 includes/class-cashapp-main.php:130
+#: includes/class-cashapp-gateway.php:286
+#: includes/class-cashapp-gateway.php:308
+msgid "Confirming"
+msgstr ""
+
+#: includes/class-cashapp-main.php:114 includes/class-cashapp-gateway.php:291
+#, php-format
+msgid "Confirm Payment <span class=\"count\">(%s)</span>"
+msgid_plural "Confirm Payment <span class=\"count\">(%s)</span>"
+msgstr[0] ""
+msgstr[1] ""
+
+#: includes/class-cashapp-gateway.php:25 includes/class-cashapp-gateway.php:98
+msgid "CashApp"
+msgstr ""
+
+#: includes/class-cashapp-gateway.php:26
+msgid "CashApp Payment Gateway for WooCommerce."
+msgstr ""
+
+#: includes/class-cashapp-gateway.php:56
+msgid "Step-by-Step Guide"
+msgstr ""
+
+#: includes/class-cashapp-gateway.php:59
+msgid ""
+"<ol>\n"
+"                            <li>Step by step guide to create billing email "
+"and cashapp account.</li>\n"
+"                        </ol>"
+msgstr ""
+
+#: includes/class-cashapp-gateway.php:64 includes/class-cashapp-gateway.php:73
+msgid "Enable/Disable"
+msgstr ""
+
+#: includes/class-cashapp-gateway.php:66 includes/class-cashapp-gateway.php:75
+msgid "Enable CashApp Payment"
+msgstr ""
+
+#: includes/class-cashapp-gateway.php:84
+msgid "License Key"
+msgstr ""
+
+#: includes/class-cashapp-gateway.php:86
+msgid "Enter your license key for updates and support."
+msgstr ""
+
+#: includes/class-cashapp-gateway.php:95
+msgid "Title"
+msgstr ""
+
+#: includes/class-cashapp-gateway.php:97
+msgid "Title shown to the customer during checkout"
+msgstr ""
+
+#: includes/class-cashapp-gateway.php:101
+msgid "Description"
+msgstr ""
+
+#: includes/class-cashapp-gateway.php:103
+msgid "Description shown to the customer during checkout"
+msgstr ""
+
+#: includes/class-cashapp-gateway.php:104
+msgid "Pay via CashApp"
+msgstr ""
+
+#: includes/class-cashapp-gateway.php:108
+msgid "CashApp Tag"
+msgstr ""
+
+#: includes/class-cashapp-gateway.php:110
+msgid "Your CashApp tag that customers will send payments to."
+msgstr ""
+
+#: includes/class-cashapp-gateway.php:114
+msgid "Use QR Code Url?"
+msgstr ""
+
+#: includes/class-cashapp-gateway.php:116
+msgid "Enable this to use a QR code URL."
+msgstr ""
+
+#: includes/class-cashapp-gateway.php:124
+msgid "Email Server"
+msgstr ""
+
+#: includes/class-cashapp-gateway.php:126
+msgid ""
+"The incoming mail server for the email account to check for CashApp payments."
+msgstr ""
+
+#: includes/class-cashapp-gateway.php:130
+msgid "Email Port"
+msgstr ""
+
+#: includes/class-cashapp-gateway.php:132
+msgid "The port used for the incoming mail server."
+msgstr ""
+
+#: includes/class-cashapp-gateway.php:136
+msgid "Email Username"
+msgstr ""
+
+#: includes/class-cashapp-gateway.php:138
+msgid "The username for the email account to check for CashApp payments."
+msgstr ""
+
+#: includes/class-cashapp-gateway.php:142
+msgid "Email Password"
+msgstr ""
+
+#: includes/class-cashapp-gateway.php:144
+msgid ""
+"The password for the email account to check for CashApp payments. (This is "
+"encrypted for your safety)"
+msgstr ""
+
+#: includes/class-cashapp-gateway.php:148
+msgid "Cron Interval (Seconds)"
+msgstr ""
+
+#: includes/class-cashapp-gateway.php:150
+msgid "Set the interval for the cron job in seconds."
+msgstr ""
+
+#: includes/class-cashapp-gateway.php:157
+msgid "Retain Data on Uninstall"
+msgstr ""
+
+#: includes/class-cashapp-gateway.php:159
+msgid "Retain plugin data upon uninstallation"
+msgstr ""
+
+#: includes/class-cashapp-gateway.php:160
+msgid ""
+"Enable this option to keep all plugin data when the plugin is deleted. "
+"Useful for testing."
+msgstr ""
+
+#: includes/class-cashapp-gateway.php:164
+msgid "Debug Log"
+msgstr ""
+
+#: includes/class-cashapp-gateway.php:166
+msgid "Enable logging"
+msgstr ""
+
+#: includes/class-cashapp-gateway.php:168
+#, php-format
+msgid "Log CashApp events, such as IPN requests, inside %s."
+msgstr ""
+
+#: includes/class-cashapp-gateway.php:191
+#: includes/class-cashapp-gateway.php:352
+msgid "CashApp tag is required for payment."
+msgstr ""
+
+#: includes/class-cashapp-gateway.php:201
+msgid "Awaiting CashApp payment"
+msgstr ""
+
+#: includes/class-cashapp-gateway.php:235
+msgid "Please include cashtag for payment confirmation."
+msgstr ""
+
+#: includes/class-cashapp-gateway.php:247
+msgid "CashApp QR Code"
+msgstr ""
+
+#: includes/class-cashapp-gateway.php:252
+msgid "Pay CashApp Tag: "
+msgstr ""
