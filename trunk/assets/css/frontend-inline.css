@@ -1,7 +1,0 @@
-/* Styles for the CashApp tag input field */
-.woocommerce-invalid #dcomp_cashapp_tag_input {
-    border-color: #a00!important;
-}
-.woocommerce-validated #dcomp_cashapp_tag_input {
-    border-color: #6dc22e!important;
-}
