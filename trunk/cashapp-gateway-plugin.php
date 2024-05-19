@@ -14,24 +14,27 @@
  */
 
 if (!defined('ABSPATH')) {
-    exit;
+    exit; // Exit if accessed directly.
 }
 
-define('DCOMP_IDKCA_LICENSE_KEY_OPTION', 'dcomp_idkca_license_key');
-define('DCOMP_IDKCA_PLUGIN_VERSION', '1.1.21');
-define('DCOMP_IDKCA_DIR_PATH', plugin_dir_path(__FILE__));
-define('DCOMP_IDKCA_PLUGIN_URL', plugin_dir_url(__FILE__));
+// Define constants for the plugin.
+define('DCOMP_IDKCA_LICENSE_KEY_OPTION', 'dcomp_idkca_license_key'); // Option name for storing the license key.
+define('DCOMP_IDKCA_PLUGIN_VERSION', '1.1.21'); // Plugin version.
+define('DCOMP_IDKCA_DIR_PATH', plugin_dir_path(__FILE__)); // Directory path of the plugin.
+define('DCOMP_IDKCA_PLUGIN_URL', plugin_dir_url(__FILE__)); // URL of the plugin directory.
 
-// Include utility functions
+// Include utility functions.
 require_once DCOMP_IDKCA_DIR_PATH . 'includes/class-cashapp-utils.php';
-
 
 /**
  * Handles plugin uninstallation tasks.
+ * 
+ * This function is called when the plugin is uninstalled. It removes all plugin-related options
+ * from the WordPress database if the 'retain data' option is not enabled.
  */
 function dcomp_cashapp_uninstall() {
     if (get_option('woocommerce_dcomp_cashapp_retain_data') !== 'yes') {
-        // Clean up options
+        // Clean up options.
         delete_option('woocommerce_dcomp_cashapp_enabled');
         delete_option('woocommerce_dcomp_cashapp_title');
         delete_option('woocommerce_dcomp_cashapp_description');
@@ -48,5 +51,5 @@ function dcomp_cashapp_uninstall() {
 }
 register_uninstall_hook(__FILE__, 'dcomp_cashapp_uninstall');
 
-// Load the main plugin class
+// Load the main plugin class.
 require_once DCOMP_IDKCA_DIR_PATH . 'includes/class-cashapp-main.php';

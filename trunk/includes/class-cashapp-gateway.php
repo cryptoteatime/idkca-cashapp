@@ -7,13 +7,19 @@ if (!defined('ABSPATH')) {
 /**
  * Digital Compass CashApp Gateway Class
  * 
- * Copyright 2023 Digital Compass. All rights reserved.
- * Licensed under GPLv2 or later
+ * Provides the CashApp Payment Gateway functionality for WooCommerce.
  * 
- * Provides the CashApp Payment Gateway functionality.
+ * @package DComp_CashApp_Payment_Gateway
+ * @since 1.0.0
+ * @license GPL-2.0+
  */
 class DComp_CashApp_Payment_Gateway extends WC_Payment_Gateway {
 
+    /**
+     * Constructor for the gateway.
+     * 
+     * Initializes the gateway settings, hooks, and actions.
+     */
     public function __construct() {
         $this->id = 'dcomp_cashapp';
         $this->method_title = __('CashApp', 'dcomp');
@@ -23,6 +29,7 @@ class DComp_CashApp_Payment_Gateway extends WC_Payment_Gateway {
         $this->title = $this->get_option('title');
         $this->description = $this->get_option('description');
         $this->debug = 'yes' === $this->get_option('debug', 'no');
+        $this->ispremium = DComp_CashApp_Utils::is_addon_active('idkca-cashapp-autoconfirm-addon/cashapp-autoconfirm-plugin.php');
 
         $this->init_form_fields();
         $this->init_settings();
@@ -37,9 +44,11 @@ class DComp_CashApp_Payment_Gateway extends WC_Payment_Gateway {
 
     /**
      * Initialize Gateway Settings Form Fields
+     * 
+     * Sets up the form fields for the gateway settings page.
      */
     public function init_form_fields() {
-        if (DComp_CashApp_Utils::is_addon_active('idkca-cashapp-autoconfirm-addon/cashapp-autoconfirm-plugin.php')) {
+        if ($this->ispremium) {
             $this->form_fields = array(
                 // Step-by-Step Guide
                 //check if premium add-on is included.
@@ -68,8 +77,8 @@ class DComp_CashApp_Payment_Gateway extends WC_Payment_Gateway {
                 ),
             );
         }
-
-        if (DComp_CashApp_Utils::is_addon_active('idkca-cashapp-autoconfirm-addon/cashapp-autoconfirm-plugin.php')) {
+        // check if license key is required. 
+        if ($this->ispremium) {
             $this->form_fields = array_merge($this->form_fields, array(
                 'license_key' => array(
                     'title'       => __('License Key', 'dcomp'),
@@ -109,7 +118,7 @@ class DComp_CashApp_Payment_Gateway extends WC_Payment_Gateway {
             ),
         ));
         //check if premium add-on is included.
-        if (DComp_CashApp_Utils::is_addon_active('idkca-cashapp-autoconfirm-addon/cashapp-autoconfirm-plugin.php')) {
+        if ($this->ispremium) {
             $this->form_fields = array_merge($this->form_fields, array(
                 'email_server' => array(
                     'title'       => __('Email Server', 'dcomp'),
@@ -165,8 +174,10 @@ class DComp_CashApp_Payment_Gateway extends WC_Payment_Gateway {
     /**
      * Process Payment
      *
-     * @param int $order_id
-     * @return array
+     * Processes the payment and returns the result.
+     * 
+     * @param int $order_id The order ID.
+     * @return array The result of the payment processing.
      */
     public function process_payment($order_id) {
         $order = wc_get_order($order_id);
@@ -187,13 +198,11 @@ class DComp_CashApp_Payment_Gateway extends WC_Payment_Gateway {
         }
 
         // Mark as pending (we're awaiting the CashApp payment)
-        $order->update_status('confirm-payment', __('Awaiting CashApp payment: \n', 'dcomp'));
+        $order->update_status('confirm-payment', __('Awaiting CashApp payment', 'dcomp'));
 
         // Save the CashApp tag as order metadata
         $order->update_meta_data('_dcomp_cashapp_tag', $cashapp_tag);
         $order->save_meta_data();
-
-        
 
         // Return thank you page redirect
         return array(
@@ -204,9 +213,10 @@ class DComp_CashApp_Payment_Gateway extends WC_Payment_Gateway {
 
     /**
      * Display CashApp details on the checkout page
+     * 
+     * Outputs the payment fields on the checkout page.
      */
     public function payment_fields() {
-    
         // Get the cart total amount
         $amount = WC()->cart->total;
 
@@ -243,24 +253,21 @@ class DComp_CashApp_Payment_Gateway extends WC_Payment_Gateway {
             }
         }
     }
-    
+
     /**
      * Override process_admin_options to encrypt email_password
      */
     public function process_admin_options() {
-
         parent::process_admin_options();
 
-        //check if premium add-on is included.
-        if (DComp_CashApp_Utils::is_addon_active('idkca-cashapp-autoconfirm-addon/cashapp-autoconfirm-plugin.php')) {
-
+        // Additional processing if the add-on is active
+        if ($this->ispremium) {
             // Save the license key
             $new_license_key = isset($_POST['woocommerce_dcomp_cashapp_license_key']) ? sanitize_text_field($_POST['woocommerce_dcomp_cashapp_license_key']) : '';
             update_option(DCOMP_IDKCA_LICENSE_KEY_OPTION, $new_license_key);
 
             // Get the new interval from the POST data
             $new_interval = isset($_POST['woocommerce_dcomp_cashapp_cron_interval']) ? intval($_POST['woocommerce_dcomp_cashapp_cron_interval']) : 300;
-
             update_option('woocommerce_dcomp_cashapp_cron_interval', $new_interval);
 
             // Re-run the function to add the custom cron schedule
@@ -269,7 +276,6 @@ class DComp_CashApp_Payment_Gateway extends WC_Payment_Gateway {
             // Clear the existing cron event
             wp_clear_scheduled_hook('dcomp_check_email_for_payment');
         }
-
     }
 
     /**
@@ -288,6 +294,9 @@ class DComp_CashApp_Payment_Gateway extends WC_Payment_Gateway {
 
     /**
      * Add the 'Confirm Payment' status to the list of order statuses in WooCommerce.
+     * 
+     * @param array $order_statuses Existing order statuses.
+     * @return array Modified order statuses with the custom status added.
      */
     public function add_custom_order_statuses($order_statuses) {
         $new_order_statuses = array();
@@ -303,38 +312,41 @@ class DComp_CashApp_Payment_Gateway extends WC_Payment_Gateway {
         return $new_order_statuses;
     }
 
-	/**
-	 * Enqueue custom admin CSS.
-	 */
-	public function enqueue_admin_css() {
-		global $pagenow;
+    /**
+     * Enqueue custom admin CSS.
+     * 
+     * Enqueues the admin CSS file for the plugin.
+     */
+    public function enqueue_admin_css() {
+        global $pagenow;
 
-		// Check if we are on the WooCommerce Orders page.
-		if ( $pagenow === 'admin.php' && isset($_GET['page']) && $_GET['page'] === 'wc-orders' ) {
-			// Get the URL to the 'admin-order-status.css' file using the relative path.
-			$css_file_url = plugins_url('assets/css/admin-order-status.css', dirname(__FILE__));
-
-			// Enqueue your admin CSS file.
-			wp_enqueue_style('admin-order-status', $css_file_url, array(), DCOMP_IDKCA_PLUGIN_VERSION);
-		}
-	}
+        // Check if we are on the WooCommerce Orders page
+        if ($pagenow === 'admin.php' && isset($_GET['page']) && $_GET['page'] === 'wc-orders') {
+            $css_file_url = plugins_url('assets/css/admin-order-status.css', dirname(__FILE__));
+            wp_enqueue_style('admin-order-status', $css_file_url, array(), DCOMP_IDKCA_PLUGIN_VERSION);
+        }
+    }
 
     /**
      * Enqueue custom frontend CSS on the WooCommerce checkout page.
+     * 
+     * Enqueues the frontend CSS file for the plugin.
      */
     public function enqueue_frontend_css() {
         // Check if we are on the WooCommerce checkout page
         if (is_checkout()) {
-            // Define the URL to your inline CSS file
             $css_file_url = plugins_url('assets/css/frontend-inline.css', dirname(__FILE__));
-
-            // Enqueue your frontend CSS file with the defined version
             wp_enqueue_style('frontend-inline', $css_file_url, array(), DCOMP_IDKCA_PLUGIN_VERSION);
         }
     }
 
+    /**
+     * Custom checkout process.
+     * 
+     * Adds validation for the CashApp tag during the checkout process.
+     */
     public function checkout_process() {
-        // Checkout process logic
+        // Check if the chosen payment method is CashApp
         if (WC()->session->get('chosen_payment_method') === 'dcomp_cashapp') {
             if (empty($_POST['dcomp_cashapp_tag_input'])) {
                 wc_add_notice(__('CashApp tag is required for payment.', 'dcomp'), 'error');
