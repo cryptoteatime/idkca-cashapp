@@ -3,7 +3,7 @@ Contributors: JD Farrell
 Tags: woocommerce, payment gateway, cashapp, payments, online payments
 Requires at least: 5.0
 Tested up to: 5.8
-Stable tag: 1.0.72
+Stable tag: 1.2.4
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 Copyright: 2023 Digital Compass. All rights reserved.
