@@ -50,15 +50,13 @@ class DComp_CashApp_Payment_Gateway extends WC_Payment_Gateway {
     public function init_form_fields() {
         if ($this->ispremium) {
             $this->form_fields = array(
-                // Step-by-Step Guide
-                //check if premium add-on is included.
                 'step_by_step_guide' => array(
                     'title'       => __('Step-by-Step Guide', 'idkca-cashapp'),
                     'type'        => 'title',
                     'description' => __(
-                        '<ol>
-                            <li>Step by step guide to create billing email and cashapp account.</li>
-                        </ol>', 'idkca-cashapp'),
+                        'Step by step guide to create billing email and cashapp account.',
+                        'idkca-cashapp'
+                    ),
                 ),
                 'enabled' => array(
                     'title'   => __('Enable/Disable', 'idkca-cashapp'),
@@ -77,7 +75,6 @@ class DComp_CashApp_Payment_Gateway extends WC_Payment_Gateway {
                 ),
             );
         }
-        // check if license key is required. 
         if ($this->ispremium) {
             $this->form_fields = array_merge($this->form_fields, array(
                 'license_key' => array(
@@ -89,7 +86,6 @@ class DComp_CashApp_Payment_Gateway extends WC_Payment_Gateway {
             ));
         }
 
-        // add generic fields. 
         $this->form_fields = array_merge($this->form_fields, array(
             'title' => array(
                 'title'       => __('Title', 'idkca-cashapp'),
@@ -103,7 +99,6 @@ class DComp_CashApp_Payment_Gateway extends WC_Payment_Gateway {
                 'description' => __('Description shown to the customer during checkout', 'idkca-cashapp'),
                 'default'     => __('Pay via CashApp', 'idkca-cashapp')
             ),
-            // Additional fields for CashApp tag and QR code
             'cashapp_tag' => array(
                 'title'       => __('CashApp Tag', 'idkca-cashapp'),
                 'type'        => 'text',
@@ -117,7 +112,6 @@ class DComp_CashApp_Payment_Gateway extends WC_Payment_Gateway {
                 'default'     => 'no'
             ),
         ));
-        //check if premium add-on is included.
         if ($this->ispremium) {
             $this->form_fields = array_merge($this->form_fields, array(
                 'email_server' => array(
@@ -148,7 +142,7 @@ class DComp_CashApp_Payment_Gateway extends WC_Payment_Gateway {
                     'title'       => __('Cron Interval (Seconds)', 'idkca-cashapp'),
                     'type'        => 'number',
                     'description' => __('Set the interval for the cron job in seconds.', 'idkca-cashapp'),
-                    'default'     => 300, // Default is 5 minutes
+                    'default'     => 300,
                 ),
             ));
         }
@@ -165,9 +159,9 @@ class DComp_CashApp_Payment_Gateway extends WC_Payment_Gateway {
                 'type'        => 'checkbox',
                 'label'       => __('Enable logging', 'idkca-cashapp'),
                 'default'     => 'no',
-                'description' => sprintf(__('Log CashApp events, such as IPN requests, inside %s.', 'idkca-cashapp'), '<code>' . WC_Log_Handler_File::get_log_file_path('dcomp_cashapp') . '</code>'),
+                // Translators: %s is the path to the debug log file
+                'description' => sprintf(__('Log CashApp events, such as IPN requests, inside %s.', 'idkca-cashapp'), '<code>' . esc_html(WC_Log_Handler_File::get_log_file_path('dcomp_cashapp')) . '</code>'),
             ),
-
         ));
     }
 
@@ -180,6 +174,15 @@ class DComp_CashApp_Payment_Gateway extends WC_Payment_Gateway {
      * @return array The result of the payment processing.
      */
     public function process_payment($order_id) {
+        // Check nonce for security
+        if (!isset($_POST['_wpnonce']) || !wp_verify_nonce($_POST['_wpnonce'], 'woocommerce-process_checkout')) {
+            wc_add_notice(__('Nonce verification failed', 'idkca-cashapp'), 'error');
+            return array(
+                'result' => 'failure',
+                'reload' => true,
+            );
+        }
+
         $order = wc_get_order($order_id);
 
         // Retrieve the CashApp tag from the POST data
@@ -187,10 +190,7 @@ class DComp_CashApp_Payment_Gateway extends WC_Payment_Gateway {
 
         // Validate the CashApp tag
         if (empty($cashapp_tag)) {
-            // Add a WooCommerce error notice
             wc_add_notice(__('CashApp tag is required for payment.', 'idkca-cashapp'), 'error');
-
-            // Return an array to signify failure and to not proceed to payment
             return array(
                 'result' => 'failure',
                 'reload' => true,
@@ -204,7 +204,6 @@ class DComp_CashApp_Payment_Gateway extends WC_Payment_Gateway {
         $order->update_meta_data('_dcomp_cashapp_tag', $cashapp_tag);
         $order->save_meta_data();
 
-        // Return thank you page redirect
         return array(
             'result'   => 'success',
             'redirect' => $this->get_return_url($order)
@@ -217,39 +216,32 @@ class DComp_CashApp_Payment_Gateway extends WC_Payment_Gateway {
      * Outputs the payment fields on the checkout page.
      */
     public function payment_fields() {
-        // Get the cart total amount
         $amount = WC()->cart->total;
 
-        // Debug log for the cart amount
         if ($this->debug) {
-            $this->log->debug('Cart total amount: ' . $amount, array('source' => 'dcomp_cashapp'));
+            $this->log->debug('Cart total amount: ' . esc_html($amount), array('source' => 'dcomp_cashapp'));
         }
 
-        // CashApp tag and QR code from settings
         $cashapp_tag = $this->get_option('cashapp_tag');
 
         if ($cashapp_tag) {
-            $cashapp_url = "https://cash.me/\{$cashapp_tag}/{$amount}/";
+            $cashapp_url = esc_url("https://cash.me/\{$cashapp_tag}/{$amount}/");
 
-            // Description with nonce for faster processing
-            $description_with_nonce = $this->description . "<br/>" . __("Please include cashtag for payment confirmation.", 'idkca-cashapp');
-
-            // Add a text input for the CashApp tag
             echo '<p class="form-row address-field validate-required form-row-wide" id="dcomp_cashapp_tag_field" data-o_class="form-row form-row-wide address-field validate-required">';
-            echo wp_kses_post($description_with_nonce);
-            echo '<label for="dcomp_cashapp_tag_input">Your CashApp Tag&nbsp;<abbr class="required" title="required">*</abbr></label>';
+            echo wp_kses_post($this->description . "<br/>" . __("Please include cashtag for payment confirmation.", 'idkca-cashapp'));
+            echo '<label for="dcomp_cashapp_tag_input">' . esc_html__('Your CashApp Tag', 'idkca-cashapp') . '&nbsp;<abbr class="required" title="required">*</abbr></label>';
             echo '<span class="woocommerce-input-wrapper">';
             echo '<input type="text" class="input-text" name="dcomp_cashapp_tag_input" id="dcomp_cashapp_tag_input" placeholder="$yourtag" value="" required autocomplete="off" style="max-width: 250px;"></span></p>';
 
             if ($this->get_option('use_qr_code') === 'yes') {
                 echo '<div style="text-align: center; margin-top: 20px;">';
                 echo '<a href="' . esc_url($cashapp_url) . '" target="_blank">';
-                echo '<img style="width: 200px; height: auto; margin-bottom: 10px;" src="' . esc_url('https://cash.app/qr/'.$cashapp_tag) . '" alt="' . __('CashApp QR Code', 'idkca-cashapp') . '">';
+                echo '<img style="width: 200px; height: auto; margin-bottom: 10px;" src="' . esc_url('https://cash.app/qr/'.$cashapp_tag) . '" alt="' . esc_attr__('CashApp QR Code', 'idkca-cashapp') . '">';
                 echo '</a>';
-                echo '<p>Click or Scan to Pay</p>';
+                echo '<p>' . esc_html__('Click or Scan to Pay', 'idkca-cashapp') . '</p>';
                 echo '</div>';
             } else {
-                echo '<p>' . __('Pay CashApp Tag: ', 'idkca-cashapp') . '<a href="' . esc_url($cashapp_url) . '" target="_blank">' . esc_attr($cashapp_tag) . '</a></p>';
+                echo '<p>' . esc_html__('Pay CashApp Tag: ', 'idkca-cashapp') . '<a href="' . esc_url($cashapp_url) . '" target="_blank">' . esc_html($cashapp_tag) . '</a></p>';
             }
         }
     }
@@ -258,22 +250,21 @@ class DComp_CashApp_Payment_Gateway extends WC_Payment_Gateway {
      * Override process_admin_options to encrypt email_password
      */
     public function process_admin_options() {
+        // Check nonce for security
+        if (!isset($_POST['_wpnonce']) || !wp_verify_nonce($_POST['_wpnonce'], 'woocommerce-settings')) {
+            wp_die(esc_html__('Nonce verification failed', 'idkca-cashapp'), esc_html__('Error', 'idkca-cashapp'), array('response' => 403));
+        }
+
         parent::process_admin_options();
 
-        // Additional processing if the add-on is active
         if ($this->ispremium) {
-            // Save the license key
             $new_license_key = isset($_POST['woocommerce_dcomp_cashapp_license_key']) ? sanitize_text_field($_POST['woocommerce_dcomp_cashapp_license_key']) : '';
             update_option(DCOMP_IDKCA_LICENSE_KEY_OPTION, $new_license_key);
 
-            // Get the new interval from the POST data
             $new_interval = isset($_POST['woocommerce_dcomp_cashapp_cron_interval']) ? intval($_POST['woocommerce_dcomp_cashapp_cron_interval']) : 300;
             update_option('woocommerce_dcomp_cashapp_cron_interval', $new_interval);
 
-            // Re-run the function to add the custom cron schedule
             add_filter('cron_schedules', array('DComp_CashApp_Email_Handler', 'add_cron_interval'));
-
-            // Clear the existing cron event
             wp_clear_scheduled_hook('dcomp_check_email_for_payment');
         }
     }
@@ -282,12 +273,14 @@ class DComp_CashApp_Payment_Gateway extends WC_Payment_Gateway {
      * Register the new order status
      */
     public function register_custom_order_status() {
+        // Translators: Order status
         register_post_status('wc-confirm-payment', array(
             'label'                     => _x('Confirming', 'Order status', 'idkca-cashapp'),
             'public'                    => true,
             'exclude_from_search'       => false,
             'show_in_admin_all_list'    => true,
             'show_in_admin_status_list' => true,
+            // Translators: %s represents the count of orders with this status
             'label_count'               => _n_noop('Confirm Payment <span class="count">(%s)</span>', 'Confirm Payment <span class="count">(%s)</span>', 'idkca-cashapp'),
         ));
     }
@@ -301,7 +294,6 @@ class DComp_CashApp_Payment_Gateway extends WC_Payment_Gateway {
     public function add_custom_order_statuses($order_statuses) {
         $new_order_statuses = array();
 
-        // Add 'Confirm Payment' status after 'On Hold'
         foreach ($order_statuses as $key => $status) {
             $new_order_statuses[$key] = $status;
             if ('wc-processing' === $key) {
@@ -320,7 +312,7 @@ class DComp_CashApp_Payment_Gateway extends WC_Payment_Gateway {
     public function enqueue_admin_css() {
         global $pagenow;
 
-        // Check if we are on the WooCommerce Orders page
+        // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Nonce verification is not applicable here as this function does not process form data.
         if ($pagenow === 'admin.php' && isset($_GET['page']) && $_GET['page'] === 'wc-orders') {
             $css_file_url = plugins_url('assets/css/admin-order-status.css', dirname(__FILE__));
             wp_enqueue_style('admin-order-status', $css_file_url, array(), DCOMP_IDKCA_PLUGIN_VERSION);
@@ -333,7 +325,6 @@ class DComp_CashApp_Payment_Gateway extends WC_Payment_Gateway {
      * Enqueues the frontend CSS file for the plugin.
      */
     public function enqueue_frontend_css() {
-        // Check if we are on the WooCommerce checkout page
         if (is_checkout()) {
             $css_file_url = plugins_url('assets/css/frontend-inline.css', dirname(__FILE__));
             wp_enqueue_style('frontend-inline', $css_file_url, array(), DCOMP_IDKCA_PLUGIN_VERSION);
@@ -346,9 +337,10 @@ class DComp_CashApp_Payment_Gateway extends WC_Payment_Gateway {
      * Adds validation for the CashApp tag during the checkout process.
      */
     public function checkout_process() {
-        // Check if the chosen payment method is CashApp
         if (WC()->session->get('chosen_payment_method') === 'dcomp_cashapp') {
-            if (empty($_POST['dcomp_cashapp_tag_input'])) {
+            if (!isset($_POST['_wpnonce']) || !wp_verify_nonce($_POST['_wpnonce'], 'woocommerce-process_checkout')) {
+                wc_add_notice(__('Nonce verification failed', 'idkca-cashapp'), 'error');
+            } elseif (empty($_POST['dcomp_cashapp_tag_input'])) {
                 wc_add_notice(__('CashApp tag is required for payment.', 'idkca-cashapp'), 'error');
             }
         }

@@ -1,4 +1,4 @@
-=== WooCommerce CashApp Payment Gateway ===
+=== idkCode CashApp Gateway for WooCommerce ===
 Contributors: JD Farrell
 Tags: woocommerce, payment gateway, cashapp, payments, online payments
 Requires at least: 5.0
@@ -7,6 +7,8 @@ Stable tag: 1.1.2
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 Copyright: 2023 Digital Compass. All rights reserved.
+
+A WooCommerce payment gateway that enables customers to make payments using CashApp, integrating seamlessly into your WooCommerce store.
 
 == Description ==
 
@@ -68,10 +70,6 @@ No, the free version does not support automatic payment confirmations. Automatic
 = 1.0 =
 * Initial release.
 
-== Upgrade Notice ==
-
-This plugin requires a valid license for updates and support. Licenses can be purchased from [Digital Compass](https://idkcode.com/). Upon expiration, you will no longer receive updates or support for the plugin unless the license is renewed.
-
 == Screenshots ==
 
 1. CashApp Payment Gateway settings in WooCommerce.
@@ -87,7 +85,7 @@ For support or inquiries, please contact [Your Contact Information](https://idkc
 
 == Contribute ==
 
-If you'd like to contribute to the development of this plugin, please visit the [GitHub repository](https://github.com/your-repo) and submit a pull request.
+If you'd like to contribute to the development of this plugin, please visit the [GitHub repository](https://github.com/cryptoteatime/idkca-cashapp) and submit a pull request.
 
 == License ==
 
